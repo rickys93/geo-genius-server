@@ -59,9 +59,9 @@ app.put("/user", (req, res) => {
 
 // GET random fun fact endpoint
 app.get("/fun-facts", (req, res) => {
-    res.json({
+    res.json(
         funFacts
-    })
+    )
 });
 
 app.get('/fun-facts/random', (req, res) => {
@@ -69,16 +69,16 @@ app.get('/fun-facts/random', (req, res) => {
     const randomId = Math.ceil(Math.random() * funFacts.length);
     //fact with the random ID
     const randomFact = funFacts[randomId];
-    res.json({
+    res.json(
          randomFact
-    });
+    );
 })
 
 //GET request for random flag and fact
 app.get("/flag-facts", (req, res) => {
-    res.json({
+    res.json(
         flagFacts
-    })
+    )
 });
 
 app.get('/flag-facts/random', (req, res) => {
@@ -86,9 +86,9 @@ app.get('/flag-facts/random', (req, res) => {
     const randomId = Math.ceil(Math.random() * funFacts.length);
     //fact with the random ID
     const randomFlag = flagFacts[randomId];
-    res.json({
+    res.json(
          randomFlag
-    });
+    );
 })
 
 module.exports = app; // makes the server available to other files
