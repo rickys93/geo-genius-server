@@ -20,7 +20,7 @@ const countries = [
         Hemisphere: "North",
         Continent: "North America",
         Capital: "Mexico City",
-        Languages: "",
+        Languages: "Spanish",
         Population: 130000000,
     },
     {
@@ -96,3 +96,5 @@ const countries = [
         Population: 58000000,
     },
 ];
+
+module.exports = countries;
