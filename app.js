@@ -6,6 +6,7 @@ const { json } = require("express");
 const logger = require("./logger");
 let userProfile = require("./database/user-profile.js");
 let funFacts = require("./database/fun-facts.js");
+let flagFacts = require("./database/flag-facts.js");
 
 const app = express(); // make very basic server using express
 
@@ -57,6 +58,37 @@ app.put("/user", (req, res) => {
 });
 
 // GET random fun fact endpoint
-app.get("/fun-facts", (req, res) => {});
+app.get("/fun-facts", (req, res) => {
+    res.json({
+        funFacts
+    })
+});
+
+app.get('/fun-facts/random', (req, res) => {
+    //generate random ID from IDs available
+    const randomId = Math.ceil(Math.random() * funFacts.length);
+    //fact with the random ID
+    const randomFact = funFacts[randomId];
+    res.json({
+         randomFact
+    });
+})
+
+//GET request for random flag and fact
+app.get("/flag-facts", (req, res) => {
+    res.json({
+        flagFacts
+    })
+});
+
+app.get('/flag-facts/random', (req, res) => {
+    //generate random ID from IDs available
+    const randomId = Math.ceil(Math.random() * funFacts.length);
+    //fact with the random ID
+    const randomFlag = flagFacts[randomId];
+    res.json({
+         randomFlag
+    });
+})
 
 module.exports = app; // makes the server available to other files
