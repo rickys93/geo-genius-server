@@ -5,6 +5,7 @@ const { json } = require("express");
 
 const logger = require("./logger");
 let userProfile = require("./database/user-profile.js");
+let funFacts = require("./database/fun-facts.js");
 
 const app = express(); // make very basic server using express
 
@@ -25,6 +26,7 @@ app.get("/", (req, res) => {
     });
 });
 
+// User endpoints
 app.get("/user", (req, res) => {
     if (!userProfile) {
         json.status(404).json({
@@ -53,5 +55,8 @@ app.put("/user", (req, res) => {
     }
     res.status(200).json(userProfile);
 });
+
+// GET random fun fact endpoint
+app.get("/fun-facts", (req, res) => {});
 
 module.exports = app; // makes the server available to other files
