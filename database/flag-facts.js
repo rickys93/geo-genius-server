@@ -85,7 +85,7 @@ const flagFacts = [
     {
         id: 14,
         countryName: "Jamaica",
-        flagFile: "./flag-images/jm/png",
+        flagFile: "./flag-images/jm.png",
         interestingFact: "Jamaica produces the most music per capita. ",
     },
     {
