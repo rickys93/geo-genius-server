@@ -1,4 +1,4 @@
-const flagFacts = [
+const flags = [
     {
         id: 1,
         countryName: "Japan",
@@ -96,4 +96,4 @@ const flagFacts = [
     },
 ];
 
-module.exports = flagFacts;
+module.exports = flags;

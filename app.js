@@ -4,10 +4,10 @@ const cors = require("cors");
 const { json } = require("express");
 
 const logger = require("./logger");
-let userProfile = require("./database/user-profile.js");
-let funFacts = require("./database/fun-facts.js");
-let flagFacts = require("./database/flag-facts.js");
-let countryfacts = require("./database/countryfacts.js")
+let userProfile = require("./database/userProfile.js");
+let funFacts = require("./database/funFacts.js");
+let flags = require("./database/flags.js");
+let countries = require("./database/countries.js");
 
 const app = express(); // make very basic server using express
 
@@ -34,6 +34,7 @@ app.get("/user", (req, res) => {
         json.status(404).json({
             message: "userProfile not found",
         });
+        return;
     }
     res.json(userProfile);
 });
@@ -52,67 +53,145 @@ app.put("/user", (req, res) => {
 
     if (!changesMade) {
         res.status(400).json({
-            message: "body must include either name or points key",
+            message: "Body must include either name or points key",
         });
+        return;
     }
     res.status(200).json(userProfile);
 });
 
 // GET random fun fact endpoint
 app.get("/fun-facts", (req, res) => {
-    res.json(funFacts);
+    if (!funFacts) {
+        json.status(404).json({
+            messsage: "No funFacts database file found.",
+        });
+        return;
+    }
+    res.status(200).json(funFacts);
 });
 
 app.get("/fun-facts/random", (req, res) => {
+    if (funFacts.length === 0) {
+        res.status(404).json({
+            message: "No items found in funFacts database file",
+        });
+        return;
+    }
     //generate random ID from IDs available
     const randomId = Math.floor(Math.random() * funFacts.length);
     //fact with the random ID
     const randomFact = funFacts[randomId];
-    res.json(randomFact);
+    res.status(200).json(randomFact);
 });
 
 //GET request for random flag and fact
 app.get("/flag-facts", (req, res) => {
-    res.json(flagFacts);
+    if (!flags) {
+        json.status(404).json({
+            messsage: "No flags database file found.",
+        });
+        return;
+    }
+    res.status(200).json(flags);
 });
 
 app.get("/flag-facts/random", (req, res) => {
+    if (flags.length === 0) {
+        res.status(404).json({
+            message: "No items found in funFacts database file",
+        });
+        return;
+    }
     //generate random ID from IDs available
-    const randomId = Math.floor(Math.random() * flagFacts.length);
+    const randomId = Math.floor(Math.random() * flags.length);
     //fact with the random ID
-    const randomFlag = flagFacts[randomId];
-    res.json(randomFlag);
+    const randomFlag = flags[randomId];
+    res.status(200).json(randomFlag);
 });
 
-
-
-
-
 //countryfacts
-app.get('/countries', (req, res) => {
-    res.json(countryfacts);
-})
-
-app.get('/countryfacts', (req, res) => {
-    let randId = Math.floor(Math.random()*countryfacts.length);
-    res.json(countryfacts[randId])
-})
-
-app.get('/countryfacts/:id', (req, res) => {
-    const id = req.params.id;
-    let arr = Array.from(Array(countryfacts.length).keys());
-    //arr.splice(//questionID, 1)//for when we have the questions set up so we dont randomly choose the answer
-    let rand = []
-    for (i = 0; i < 3; i++){
-        rand.push(arr[Math.floor(Math.random()*arr.length)]);
-        arr.splice(arr.indexOf(rand[i]), 1);
+app.get("/countries", (req, res) => {
+    if (!countries) {
+        json.status(404).json({
+            messsage: "No countries database file found.",
+        });
+        return;
     }
-    let obj = {};
-    obj["a1"] = countryfacts[rand[0]][id];
-    obj["a2"] = countryfacts[rand[1]][id];
-    obj["a3"] = countryfacts[rand[2]][id];
+    res.status(200).json(countries);
+});
 
-    res.send(obj);
-})
+app.get("/country-facts", (req, res) => {
+    if (countries.length === 0) {
+        res.status(404).json({
+            message: "No items found in funFacts database file",
+        });
+        return;
+    }
+    //generate random ID from IDs available
+    const randomId = Math.floor(Math.random() * countries.length);
+    //fact with the random ID
+    const randomFlag = countries[randomId];
+    res.status(200).json(randomFlag);
+});
+
+// Endpoint returns up to 3 random answers and the correct answer in random order
+app.get("/country-facts/:category/:id", (req, res) => {
+    const category = req.params.category;
+    const countryId = req.params.id;
+
+    // error handle if category not found in database
+    if (!category in countries) {
+        res.status(404).json({
+            message: `Category ${category} not found in countries database.`,
+        });
+        return;
+    }
+
+    // For some categories, an answer can appear more than once (eg. continent)
+    // So this finds just the unique answers
+    let allAnswers = [];
+    for (country of countries) {
+        allAnswers.push(country[category]);
+    }
+    function onlyUnique(value, index, self) {
+        return self.indexOf(value) === index;
+    }
+    let uniqueAnswers = allAnswers.filter(onlyUnique);
+
+    // if the total possible answers is 4 or less (eg. only 2 hemispheres), just return all the answers
+    if (uniqueAnswers.length <= 4) {
+        // put the answers in a random order
+        const shuffledAnswers = uniqueAnswers.sort(
+            (a, b) => 0.5 - Math.random()
+        );
+        res.status(200).json(shuffledAnswers);
+        return;
+    }
+
+    // get the correct answer
+    let answers = [];
+    answers.push(countries[countryId][category]);
+
+    // delete correct answer from the unique answers array
+    const correctIndex = uniqueAnswers.indexOf(countries[countryId][category]);
+    uniqueAnswers.splice(correctIndex, 1);
+
+    // now get 3 random answers
+    for (i = 0; i < 3; i++) {
+        // gets random index and answer from unique answers
+        let randomIndex = Math.floor(Math.random() * uniqueAnswers.length);
+        let randomAnswer = uniqueAnswers[randomIndex];
+        answers.push(randomAnswer);
+
+        // delete the random answer so can't be selected again
+        uniqueAnswers.splice(randomIndex, 1);
+    }
+
+    // put the answers in a random order
+    const shuffledAnswers = answers.sort((a, b) => 0.5 - Math.random());
+
+    res.json(shuffledAnswers);
+});
 
 module.exports = app; // makes the server available to other files
