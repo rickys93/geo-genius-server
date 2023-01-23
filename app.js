@@ -59,36 +59,28 @@ app.put("/user", (req, res) => {
 
 // GET random fun fact endpoint
 app.get("/fun-facts", (req, res) => {
-    res.json({
-        funFacts
-    })
+    res.json(funFacts);
 });
 
-app.get('/fun-facts/random', (req, res) => {
+app.get("/fun-facts/random", (req, res) => {
     //generate random ID from IDs available
-    const randomId = Math.ceil(Math.random() * funFacts.length);
+    const randomId = Math.floor(Math.random() * funFacts.length);
     //fact with the random ID
     const randomFact = funFacts[randomId];
-    res.json({
-         randomFact
-    });
-})
+    res.json(randomFact);
+});
 
 //GET request for random flag and fact
 app.get("/flag-facts", (req, res) => {
-    res.json({
-        flagFacts
-    })
+    res.json(flagFacts);
 });
 
-app.get('/flag-facts/random', (req, res) => {
+app.get("/flag-facts/random", (req, res) => {
     //generate random ID from IDs available
-    const randomId = Math.ceil(Math.random() * funFacts.length);
+    const randomId = Math.floor(Math.random() * flagFacts.length);
     //fact with the random ID
     const randomFlag = flagFacts[randomId];
-    res.json({
-         randomFlag
-    });
-})
+    res.json(randomFlag);
+});
 
 module.exports = app; // makes the server available to other files
