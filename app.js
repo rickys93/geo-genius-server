@@ -7,6 +7,7 @@ const logger = require("./logger");
 let userProfile = require("./database/user-profile.js");
 let funFacts = require("./database/fun-facts.js");
 let flagFacts = require("./database/flag-facts.js");
+let countryfacts = require("./database/countryfacts.js")
 
 const app = express(); // make very basic server using express
 
@@ -82,5 +83,36 @@ app.get("/flag-facts/random", (req, res) => {
     const randomFlag = flagFacts[randomId];
     res.json(randomFlag);
 });
+
+
+
+
+
+//countryfacts
+app.get('/countries', (req, res) => {
+    res.json(countryfacts);
+})
+
+app.get('/countryfacts', (req, res) => {
+    let randId = Math.floor(Math.random()*countryfacts.length);
+    res.json(countryfacts[randId])
+})
+
+app.get('/countryfacts/:id', (req, res) => {
+    const id = req.params.id;
+    let arr = Array.from(Array(countryfacts.length).keys());
+    //arr.splice(//questionID, 1)//for when we have the questions set up so we dont randomly choose the answer
+    let rand = []
+    for (i = 0; i < 3; i++){
+        rand.push(arr[Math.floor(Math.random()*arr.length)]);
+        arr.splice(arr.indexOf(rand[i]), 1);
+    }
+    let obj = {};
+    obj["a1"] = countryfacts[rand[0]][id];
+    obj["a2"] = countryfacts[rand[1]][id];
+    obj["a3"] = countryfacts[rand[2]][id];
+
+    res.send(obj);
+})
 
 module.exports = app; // makes the server available to other files
