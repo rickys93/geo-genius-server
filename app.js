@@ -136,24 +136,38 @@ app.get("/country-facts", (req, res) => {
 });
 
 // Endpoint returns up to 3 random answers and the correct answer in random order
-app.get("/country-facts/:category/:id", (req, res) => {
-    const category = req.params.category;
+app.get("/country-facts/:id", (req, res) => {
     const countryId = req.params.id;
 
-    // error handle if category not found in database
-    if (!category in countries) {
+    if (countryId >= countries.length) {
         res.status(404).json({
-            message: `Category ${category} not found in countries database.`,
+            message: `ID ${countryId} not found in database`,
         });
         return;
     }
 
+    // for each category get a list of answers in random order, with one being correct
+    let answers = {};
+    for (category of Object.keys(countries[0])) {
+        categoryAnswers = getAnswersFor(category, countryId);
+        answers[category] = categoryAnswers;
+    }
+
+    res.status(200).json(answers);
+});
+
+function getAnswersFor(category, countryId) {
+    // error handle if category not found in database
+    if (!category in countries) {
+        return;
+    }
+
     // For some categories, an answer can appear more than once (eg. continent)
-    // So this finds just the unique answers
     let allAnswers = [];
     for (country of countries) {
         allAnswers.push(country[category]);
     }
+    // This finds just the unique answers
     function onlyUnique(value, index, self) {
         return self.indexOf(value) === index;
     }
@@ -165,8 +179,7 @@ app.get("/country-facts/:category/:id", (req, res) => {
         const shuffledAnswers = uniqueAnswers.sort(
             (a, b) => 0.5 - Math.random()
         );
-        res.status(200).json(shuffledAnswers);
-        return;
+        return shuffledAnswers;
     }
 
     // get the correct answer
@@ -191,7 +204,7 @@ app.get("/country-facts/:category/:id", (req, res) => {
     // put the answers in a random order
     const shuffledAnswers = answers.sort((a, b) => 0.5 - Math.random());
 
-    res.json(shuffledAnswers);
-});
+    return shuffledAnswers;
+}
 
 module.exports = app; // makes the server available to other files
