@@ -8,13 +8,15 @@ let userProfile = require("./database/userProfile.js");
 let funFacts = require("./database/funFacts.js");
 let flags = require("./database/flags.js");
 let countries = require("./database/countries.js");
+let {
+    flagFrenzyLeaderboard,
+    countryQuizLeaderboard,
+} = require("./database/leaderboards");
 
 const app = express(); // make very basic server using express
 
 // MIDDLEWARE
 
-// req -> [cors (add header to response)] -> [API] -> response
-// req -> [auth (check the req headers for a key)] -> [API] -> response
 app.use(express.json()); // Layer to read the body of POSTs
 app.use(cors()); // Layer to add CORS headers
 app.use(logger); // Layer to log access
@@ -205,6 +207,97 @@ function getAnswersFor(category, countryId) {
     const shuffledAnswers = answers.sort((a, b) => 0.5 - Math.random());
 
     return shuffledAnswers;
+}
+
+// leaderboard endpoints
+
+// GET all leaderboard data
+app.get("/leaderboards", (req, res) => {
+    if (!flagFrenzyLeaderboard || !countryQuizLeaderboard) {
+        res.status(404).json({
+            message: "Leaderboard not found",
+        });
+        return;
+    }
+
+    res.status(200).json({ flagFrenzyLeaderboard, countryQuizLeaderboard });
+});
+
+// GET leaderboard data for one of the leaderboards
+// options: flagfrenzy, countryquiz
+app.get("/leaderboards/:name", (req, res) => {
+    const name = req.params.name.toLowerCase();
+
+    if (name !== "flagfrenzy" && name !== "countryquiz") {
+        res.status(404).json({
+            message: `Leaderboard ${name} not found in database`,
+        });
+        return;
+    }
+    let leaderboard = flagFrenzyLeaderboard;
+    if (name === "flagfrenzy") {
+        leaderboard = flagFrenzyLeaderboard;
+    } else if (name === "countryquiz") {
+        leaderboard = countryQuizLeaderboard;
+    }
+
+    res.status(200).json(leaderboard);
+});
+
+// POST a new leaderboard entry
+app.post("/leaderboards/:name", (req, res) => {
+    const name = req.params.name.toLowerCase();
+    const newEntry = req.body;
+
+    if (name !== "flagfrenzy" && name !== "countryquiz") {
+        res.status(404).json({
+            message: `Leaderboard ${name} not found in database`,
+        });
+        return;
+    }
+
+    if (!newEntry.score || !newEntry.name) {
+        res.status(400).json({
+            message: "Body of request needs to include score and name",
+        });
+        return;
+    }
+
+    if (name === "flagfrenzy") {
+        flagFrenzyLeaderboard = addToDatabase(newEntry, flagFrenzyLeaderboard);
+        res.status(200).json(flagFrenzyLeaderboard);
+    } else if (name === "countryquiz") {
+        countryQuizLeaderboard = addToDatabase(
+            newEntry,
+            countryQuizLeaderboard
+        );
+        res.status(200).json(countryQuizLeaderboard);
+    }
+});
+
+// if score in top 10, add to leaderboard
+function addToDatabase(newEntry, leaderboard) {
+    let largerThan = leaderboard.filter(
+        (entry) => entry.score > newEntry.score
+    );
+    let smallerThan = leaderboard.filter(
+        (entry) => entry.score <= newEntry.score
+    );
+
+    // add the new entry into the correct rank
+    let newLeaderboard = [];
+    newLeaderboard = newLeaderboard.concat(largerThan);
+    newLeaderboard = newLeaderboard.concat(newEntry);
+    newLeaderboard = newLeaderboard.concat(smallerThan);
+    // delete 11th entry to keep only 10
+    newLeaderboard.pop();
+
+    // make sure each entry has the correct rank
+    for (const [index, entry] of newLeaderboard.entries()) {
+        entry.rank = index + 1;
+    }
+
+    return newLeaderboard;
 }
 
 module.exports = app; // makes the server available to other files
