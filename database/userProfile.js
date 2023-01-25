@@ -1,5 +1,5 @@
 const userProfile = {
-    name: "",
+    username: "",
     points: 0,
 };
 

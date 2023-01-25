@@ -4,10 +4,12 @@ const cors = require("cors");
 const { json } = require("express");
 
 const logger = require("./logger");
-let userProfile = require("./database/userProfile.js");
-let funFacts = require("./database/funFacts.js");
-let flags = require("./database/flags.js");
-let countries = require("./database/countries.js");
+let userProfile = require("./database/userProfile");
+let users = require("./database/users");
+let funFacts = require("./database/funFacts");
+let flags = require("./database/flags");
+let countries = require("./database/countries");
+let ranks = require("./database/ranks");
 let {
     flagFrenzyLeaderboard,
     countryQuizLeaderboard,
@@ -60,6 +62,91 @@ app.put("/user", (req, res) => {
         return;
     }
     res.status(200).json(userProfile);
+});
+
+app.post("/user/addscore", (req, res) => {
+    const updates = req.body;
+
+    if (!updates.score) {
+        res.status(400).json({
+            message: "Score not included in body",
+        });
+        return;
+    }
+    if (typeof updates.score !== "number") {
+        res.status(400).json({
+            message: "Score value not of type number",
+        });
+        return;
+    }
+
+    userProfile.points += updates.score;
+    res.status(200).json({
+        message: "Score added successfully!",
+        points: userProfile.points,
+    });
+});
+
+// Get all users list
+app.get("/users", (req, res) => {
+    console.log(users);
+
+    if (!users) {
+        res.status(404).json({
+            message: "Users database not found!",
+        });
+    }
+
+    res.status(200).json(users);
+});
+
+// Get userprofile for a username
+app.get("/users/:username", (req, res) => {
+    const username = req.params.username;
+    console.log(username);
+
+    const user = users.filter(
+        (u) => u.username.toLowerCase() === username.toLowerCase()
+    );
+
+    if (user.length === 0) {
+        res.status(404).json({
+            message: `User ${username} not found!`,
+        });
+        return;
+    }
+
+    res.status(200).json(user[0]);
+});
+
+// Add a new user
+app.post("/users", (req, res) => {
+    const newUser = req.body;
+    console.log(newUser);
+
+    if (!newUser.username) {
+        res.status(400).json({
+            message: "Username not included in body",
+        });
+        return;
+    }
+
+    const usernameTaken = users.filter(
+        (user) => user.username.toLowerCase() === newUser.username.toLowerCase()
+    );
+
+    if (usernameTaken.length > 0) {
+        res.status(409).json({
+            message: `Username ${newUser.username} already taken.`,
+        });
+    }
+    newUser.points = 0;
+
+    users.push(newUser);
+    res.status(200).json({
+        message: "User added successfully!",
+        newUser,
+    });
 });
 
 // GET random fun fact endpoint
@@ -226,7 +313,7 @@ app.get("/leaderboards", (req, res) => {
 // GET leaderboard data for one of the leaderboards
 // options: flagfrenzy, countryquiz
 app.get("/leaderboards/:name", (req, res) => {
-    const name = req.params.name.toLowerCase();
+    const name = req.params.username.toLowerCase();
 
     if (name !== "flagfrenzy" && name !== "countryquiz") {
         res.status(404).json({
@@ -246,7 +333,7 @@ app.get("/leaderboards/:name", (req, res) => {
 
 // POST a new leaderboard entry
 app.post("/leaderboards/:name", (req, res) => {
-    const name = req.params.name.toLowerCase();
+    const name = req.params.username.toLowerCase();
     const newEntry = req.body;
 
     if (name !== "flagfrenzy" && name !== "countryquiz") {
@@ -256,7 +343,7 @@ app.post("/leaderboards/:name", (req, res) => {
         return;
     }
 
-    if (!newEntry.score || !newEntry.name) {
+    if (!newEntry.score || !newEntry.username) {
         res.status(400).json({
             message: "Body of request needs to include score and name",
         });
@@ -299,5 +386,16 @@ function addToDatabase(newEntry, leaderboard) {
 
     return newLeaderboard;
 }
+
+app.get("/ranks", (req, res) => {
+    if (!ranks) {
+        res.status(404).json({
+            message: "Database ranks not found",
+        });
+        return;
+    }
+
+    res.status(200).json(ranks);
+});
 
 module.exports = app; // makes the server available to other files
