@@ -1,6 +1,7 @@
 const userProfile = {
-    username: "",
-    points: 0,
+    username: "hello",
+    points: 10,
+    rank: "Geo Novice",
 };
 
 module.exports = userProfile;

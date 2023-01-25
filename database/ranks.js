@@ -1,19 +1,27 @@
 const ranks = [
     {
-        name: "Geo Novice",
-        pointsNeeded: 0,
-    },
-    {
-        name: "Geo Scout",
-        pointsNeeded: 20,
+        name: "Geo Genius",
+        id: "gg",
+        pointsNeeded: 200,
+        stars: 3,
     },
     {
         name: "Geo Discoverer",
+        id: "gd",
         pointsNeeded: 100,
+        stars: 2,
     },
     {
-        name: "Geo Genius",
-        pointsNeeded: 200,
+        name: "Geo Scout",
+        id: "gs",
+        pointsNeeded: 20,
+        stars: 1,
+    },
+    {
+        name: "Geo Novice",
+        id: "gn",
+        pointsNeeded: 0,
+        stars: 0,
     },
 ];
 

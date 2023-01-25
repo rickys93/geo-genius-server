@@ -81,9 +81,25 @@ app.post("/user/addscore", (req, res) => {
     }
 
     userProfile.points += updates.score;
+    let index = users.findIndex((x) => x.username === userProfile.username);
+    users[index].points += updates.score;
+
+    let rankUp = false;
+    for (let rank of ranks) {
+        if (userProfile.points >= rank.pointsNeeded) {
+            if (userProfile.rank !== rank.name) {
+                userProfile.rank = rank.name;
+                rankUp = true;
+            }
+            break;
+        }
+    }
+    users[index].rank = userProfile.rank;
+
     res.status(200).json({
         message: "Score added successfully!",
-        points: userProfile.points,
+        userProfile,
+        rankUp,
     });
 });
 
@@ -116,6 +132,11 @@ app.get("/users/:username", (req, res) => {
         return;
     }
 
+    userProfile.username = user[0].username;
+    userProfile.points = user[0].points;
+    userProfile.rank = user[0].rank;
+    console.log(userProfile);
+
     res.status(200).json(user[0]);
 });
 
@@ -139,8 +160,12 @@ app.post("/users", (req, res) => {
         res.status(409).json({
             message: `Username ${newUser.username} already taken.`,
         });
+        return;
     }
     newUser.points = 0;
+    userProfile.username = newUser.username;
+    userProfile.points = newUser.points;
+    console.log(userProfile);
 
     users.push(newUser);
     res.status(200).json({
@@ -312,8 +337,8 @@ app.get("/leaderboards", (req, res) => {
 
 // GET leaderboard data for one of the leaderboards
 // options: flagfrenzy, countryquiz
-app.get("/leaderboards/:name", (req, res) => {
-    const name = req.params.username.toLowerCase();
+app.get("/leaderboards/:gameName", (req, res) => {
+    const name = req.params.gameName.toLowerCase();
 
     if (name !== "flagfrenzy" && name !== "countryquiz") {
         res.status(404).json({
@@ -332,8 +357,8 @@ app.get("/leaderboards/:name", (req, res) => {
 });
 
 // POST a new leaderboard entry
-app.post("/leaderboards/:name", (req, res) => {
-    const name = req.params.username.toLowerCase();
+app.post("/leaderboards/:gameName", (req, res) => {
+    const name = req.params.gameName.toLowerCase();
     const newEntry = req.body;
 
     if (name !== "flagfrenzy" && name !== "countryquiz") {
@@ -342,10 +367,11 @@ app.post("/leaderboards/:name", (req, res) => {
         });
         return;
     }
+    console.log(newEntry);
 
     if (!newEntry.score || !newEntry.username) {
         res.status(400).json({
-            message: "Body of request needs to include score and name",
+            message: "Body of request needs to include score and username",
         });
         return;
     }
@@ -396,6 +422,20 @@ app.get("/ranks", (req, res) => {
     }
 
     res.status(200).json(ranks);
+});
+
+app.get("/ranks/:name", (req, res) => {
+    const name = req.params.name;
+    if (!ranks) {
+        res.status(404).json({
+            message: "Database ranks not found",
+        });
+        return;
+    }
+
+    const rank = ranks.filter((r) => r.name === name);
+
+    res.status(200).json(rank);
 });
 
 module.exports = app; // makes the server available to other files
