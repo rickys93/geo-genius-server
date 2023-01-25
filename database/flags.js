@@ -239,7 +239,7 @@ const flags = [
         interestingFact: "This country is the wettest inhabited place on Earth.",
     },
     {
-        id: 15,
+        id: 40,
         countryName: "Syria",
         flagFile: "./flag-images/sy.png",
         interestingFact: "This country is the wettest inhabited place on Earth.",
