@@ -94,6 +94,54 @@ const flags = [
         flagFile: "./flag-images/in.png",
         interestingFact: "This country is the wettest inhabited place on Earth.",
     },
+    {
+        id: 16,
+        countryName: "Austria",
+        flagFile: "./flag-images/at.png",
+        interestingFact: "This country is the wettest inhabited place on Earth.",
+    },
+    {
+        id: 17,
+        countryName: "Australia",
+        flagFile: "./flag-images/au.png",
+        interestingFact: "This country is the wettest inhabited place on Earth.",
+    },
+    {
+        id: 18,
+        countryName: "Bangladesh",
+        flagFile: "./flag-images/bd.png",
+        interestingFact: "This country is the wettest inhabited place on Earth.",
+    },
+    {
+        id: 19,
+        countryName: "Bolivia",
+        flagFile: "./flag-images/bo.png",
+        interestingFact: "This country is the wettest inhabited place on Earth.",
+    },
+    {
+        id: 20,
+        countryName: "Canada",
+        flagFile: "./flag-images/ca.png",
+        interestingFact: "This country is the wettest inhabited place on Earth.",
+    },
+    {
+        id: 21,
+        countryName: "China",
+        flagFile: "./flag-images/cn.png",
+        interestingFact: "This country is the wettest inhabited place on Earth.",
+    },
+    {
+        id: 22,
+        countryName: "Cuba",
+        flagFile: "./flag-images/cu.png",
+        interestingFact: "This country is the wettest inhabited place on Earth.",
+    },
+    {
+        id: 23,
+        countryName: "Egypt",
+        flagFile: "./flag-images/eg.png",
+        interestingFact: "This country is the wettest inhabited place on Earth.",
+    },
 ];
 
 module.exports = flags;
