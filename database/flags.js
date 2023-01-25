@@ -142,6 +142,108 @@ const flags = [
         flagFile: "./flag-images/eg.png",
         interestingFact: "This country is the wettest inhabited place on Earth.",
     },
+    {
+        id: 24,
+        countryName: "Ethiopia",
+        flagFile: "./flag-images/et.png",
+        interestingFact: "This country is the wettest inhabited place on Earth.",
+    },
+    {
+        id: 25,
+        countryName: "France",
+        flagFile: "./flag-images/fr.png",
+        interestingFact: "This country is the wettest inhabited place on Earth.",
+    },
+    {
+        id: 26,
+        countryName: "Germany",
+        flagFile: "./flag-images/de.png",
+        interestingFact: "This country is the wettest inhabited place on Earth.",
+    },
+    {
+        id: 27,
+        countryName: "Greece",
+        flagFile: "./flag-images/gr.png",
+        interestingFact: "This country is the wettest inhabited place on Earth.",
+    },
+    {
+        id: 28,
+        countryName: "Italy",
+        flagFile: "./flag-images/it.png",
+        interestingFact: "This country is the wettest inhabited place on Earth.",
+    },
+    {
+        id: 29,
+        countryName: "India",
+        flagFile: "./flag-images/in.png",
+        interestingFact: "This country is the wettest inhabited place on Earth.",
+    },
+    {
+        id: 30,
+        countryName: "Israel",
+        flagFile: "./flag-images/il.png",
+        interestingFact: "This country is the wettest inhabited place on Earth.",
+    },
+    {
+        id: 31,
+        countryName: "Kenya",
+        flagFile: "./flag-images/ke.png",
+        interestingFact: "This country is the wettest inhabited place on Earth.",
+    },
+    {
+        id: 32,
+        countryName: "Kazakhstan",
+        flagFile: "./flag-images/kz.png",
+        interestingFact: "This country is the wettest inhabited place on Earth.",
+    },
+    {
+        id: 33,
+        countryName: "Malaysia",
+        flagFile: "./flag-images/my.png",
+        interestingFact: "This country is the wettest inhabited place on Earth.",
+    },
+    {
+        id: 34,
+        countryName: "Nigeria",
+        flagFile: "./flag-images/ng.png",
+        interestingFact: "This country is the wettest inhabited place on Earth.",
+    },
+    {
+        id: 35,
+        countryName: "Netherlands",
+        flagFile: "./flag-images/nl.png",
+        interestingFact: "This country is the wettest inhabited place on Earth.",
+    },
+    {
+        id: 36,
+        countryName: "Portugal",
+        flagFile: "./flag-images/pt.png",
+        interestingFact: "This country is the wettest inhabited place on Earth.",
+    },
+    {
+        id: 37,
+        countryName: "Seychelles",
+        flagFile: "./flag-images/sc.png",
+        interestingFact: "This country is the wettest inhabited place on Earth.",
+    },
+    {
+        id: 38,
+        countryName: "Ukraine",
+        flagFile: "./flag-images/ua.png",
+        interestingFact: "This country is the wettest inhabited place on Earth.",
+    },
+    {
+        id: 39,
+        countryName: "Yemen",
+        flagFile: "./flag-images/ye.png",
+        interestingFact: "This country is the wettest inhabited place on Earth.",
+    },
+    {
+        id: 15,
+        countryName: "Syria",
+        flagFile: "./flag-images/sy.png",
+        interestingFact: "This country is the wettest inhabited place on Earth.",
+    },
 ];
 
 module.exports = flags;
