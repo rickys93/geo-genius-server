@@ -14,6 +14,7 @@ let {
     flagFrenzyLeaderboard,
     countryQuizLeaderboard,
 } = require("./database/leaderboards");
+let rank;
 
 const app = express(); // make very basic server using express
 
@@ -32,6 +33,16 @@ app.get("/", (req, res) => {
     });
 });
 
+function getTotalProfile(userProfile) {
+    rank = ranks.filter((r) => r.id == userProfile.rank)[0];
+
+    let totalUserProfile = {
+        ...userProfile,
+    };
+    totalUserProfile.rank = rank;
+    return totalUserProfile;
+}
+
 // User endpoints
 app.get("/user", (req, res) => {
     if (!userProfile) {
@@ -40,7 +51,10 @@ app.get("/user", (req, res) => {
         });
         return;
     }
-    res.json(userProfile);
+
+    let totalUserProfile = getTotalProfile(userProfile);
+
+    res.json(totalUserProfile);
 });
 
 app.put("/user", (req, res) => {
@@ -87,18 +101,19 @@ app.post("/user/addscore", (req, res) => {
     let rankUp = false;
     for (let rank of ranks) {
         if (userProfile.points >= rank.pointsNeeded) {
-            if (userProfile.rank !== rank.name) {
-                userProfile.rank = rank.name;
+            if (userProfile.rank !== rank.id) {
+                userProfile.rank = rank.id;
                 rankUp = true;
             }
             break;
         }
     }
     users[index].rank = userProfile.rank;
+    let totalUserProfile = getTotalProfile(userProfile);
 
     res.status(200).json({
         message: "Score added successfully!",
-        userProfile,
+        userProfile: totalUserProfile,
         rankUp,
     });
 });
@@ -132,9 +147,9 @@ app.get("/users/:username", (req, res) => {
         return;
     }
 
-    userProfile.username = user[0].username;
-    userProfile.points = user[0].points;
-    userProfile.rank = user[0].rank;
+    userProfile = {
+        ...user[0],
+    };
     console.log(userProfile);
 
     res.status(200).json(user[0]);
@@ -143,7 +158,6 @@ app.get("/users/:username", (req, res) => {
 // Add a new user
 app.post("/users", (req, res) => {
     const newUser = req.body;
-    console.log(newUser);
 
     if (!newUser.username) {
         res.status(400).json({
@@ -163,9 +177,12 @@ app.post("/users", (req, res) => {
         return;
     }
     newUser.points = 0;
-    userProfile.username = newUser.username;
-    userProfile.points = newUser.points;
-    console.log(userProfile);
+    newUser.rank = "gn";
+    // userProfile.username = newUser.username;
+    // userProfile.points = newUser.points;
+    userProfile = {
+        ...newUser,
+    };
 
     users.push(newUser);
     res.status(200).json({
