@@ -6,6 +6,7 @@ const countries = [
         capital: "Washington, D.C",
         languages: "English",
         population: 331000000,
+        flag: "./flag-images/us.png"
     },
     {
         country: "Canada",
@@ -14,6 +15,7 @@ const countries = [
         capital: "Ottawa",
         languages: "English, French",
         population: 37600000,
+        flag: "./flag-images/ca.png"
     },
     {
         country: "Mexico",
@@ -22,6 +24,7 @@ const countries = [
         capital: "Mexico City",
         languages: "Spanish",
         population: 130000000,
+        flag: "./flag-images/mx.png"
     },
     {
         country: "Brazil",
@@ -30,6 +33,7 @@ const countries = [
         capital: "Brasília",
         languages: "Portuguese",
         population: 212000000,
+        flag: "./flag-images/br.png"
     },
     {
         country: "Argentina",
@@ -38,6 +42,7 @@ const countries = [
         capital: "Buenos Aires",
         languages: "Spanish",
         population: 44000000,
+        flag: "./flag-images/ar.png"
     },
     {
         country: "Chile",
@@ -46,6 +51,7 @@ const countries = [
         capital: "Santiago",
         languages: "Spanish",
         population: 19000000,
+        flag: "./flag-images/cl.png"
     },
     {
         country: "China",
@@ -54,6 +60,7 @@ const countries = [
         capital: "Beijing",
         languages: "Mandarin",
         population: 1440000000,
+        flag: "./flag-images/cn.png"
     },
     {
         country: "India",
@@ -62,6 +69,7 @@ const countries = [
         capital: "New Delhi",
         languages: "Hindi, English",
         population: 1380000000,
+        flag: "./flag-images/in.png"
     },
     {
         country: "Russia",
@@ -70,6 +78,7 @@ const countries = [
         capital: "Moscow",
         languages: "Russian",
         population: 144000000,
+        flag: "./flag-images/ru.png"
     },
     {
         country: "Japan",
@@ -78,6 +87,7 @@ const countries = [
         capital: "Tokyo",
         languages: "Japanese",
         population: 126000000,
+        flag: "./flag-images/jp.png"
     },
     {
         country: "Australia",
@@ -86,6 +96,7 @@ const countries = [
         capital: "Canberra",
         languages: "English",
         population: 25000000,
+        flag: "./flag-images/au.png"
     },
     {
         country: "South Africa",
@@ -94,6 +105,7 @@ const countries = [
         capital: "Cape Town, Bloemfontein, Pretoria",
         languages: "Zulu, Xhosa, Afrikaans, English",
         population: 58000000,
+        flag: "./flag-images/za.png"
     },
 ];
 
