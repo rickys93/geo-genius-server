@@ -4,16 +4,14 @@ const cors = require("cors");
 const { json } = require("express");
 
 const logger = require("./logger");
+
 let userProfile = require("./database/userProfile");
 let users = require("./database/users");
 let funFacts = require("./database/funFacts");
 let flags = require("./database/flags");
 let countries = require("./database/countries");
 let ranks = require("./database/ranks");
-let {
-    flagFrenzyLeaderboard,
-    countryQuizLeaderboard,
-} = require("./database/leaderboards");
+let leaderboards = require("./database/leaderboards");
 let rank;
 
 const app = express(); // make very basic server using express
@@ -33,16 +31,6 @@ app.get("/", (req, res) => {
     });
 });
 
-function getTotalProfile(userProfile) {
-    rank = ranks.filter((r) => r.id == userProfile.rank)[0];
-
-    let totalUserProfile = {
-        ...userProfile,
-    };
-    totalUserProfile.rank = rank;
-    return totalUserProfile;
-}
-
 // User endpoints
 app.get("/user", (req, res) => {
     if (!userProfile) {
@@ -52,7 +40,7 @@ app.get("/user", (req, res) => {
         return;
     }
 
-    let totalUserProfile = getTotalProfile(userProfile);
+    let totalUserProfile = getWholeProfile(userProfile);
 
     res.json(totalUserProfile);
 });
@@ -109,7 +97,7 @@ app.post("/user/addscore", (req, res) => {
         }
     }
     users[index].rank = userProfile.rank;
-    let totalUserProfile = getTotalProfile(userProfile);
+    let totalUserProfile = getWholeProfile(userProfile);
 
     res.status(200).json({
         message: "Score added successfully!",
@@ -342,14 +330,14 @@ function getAnswersFor(category, countryId) {
 
 // GET all leaderboard data
 app.get("/leaderboards", (req, res) => {
-    if (!flagFrenzyLeaderboard || !countryQuizLeaderboard) {
+    if (!leaderboards) {
         res.status(404).json({
             message: "Leaderboard not found",
         });
         return;
     }
 
-    res.status(200).json({ flagFrenzyLeaderboard, countryQuizLeaderboard });
+    res.status(200).json(leaderboards);
 });
 
 // GET leaderboard data for one of the leaderboards
@@ -357,35 +345,30 @@ app.get("/leaderboards", (req, res) => {
 app.get("/leaderboards/:gameName", (req, res) => {
     const name = req.params.gameName.toLowerCase();
 
-    if (name !== "flagfrenzy" && name !== "countryquiz") {
+    if (!(name in leaderboards)) {
         res.status(404).json({
             message: `Leaderboard ${name} not found in database`,
         });
         return;
     }
-    let leaderboard = flagFrenzyLeaderboard;
-    if (name === "flagfrenzy") {
-        leaderboard = flagFrenzyLeaderboard;
-    } else if (name === "countryquiz") {
-        leaderboard = countryQuizLeaderboard;
-    }
 
-    res.status(200).json(leaderboard);
+    res.status(200).json(leaderboards[name]);
 });
 
 // POST a new leaderboard entry
-app.post("/leaderboards/:gameName", (req, res) => {
+app.post("/leaderboards/:gameName/add", (req, res) => {
     const name = req.params.gameName.toLowerCase();
     const newEntry = req.body;
 
-    if (name !== "flagfrenzy" && name !== "countryquiz") {
+    // if name not in db
+    if (!name in leaderboards) {
         res.status(404).json({
             message: `Leaderboard ${name} not found in database`,
         });
         return;
     }
-    console.log(newEntry);
 
+    // make sure both score and username are included
     if (!newEntry.score || !newEntry.username) {
         res.status(400).json({
             message: "Body of request needs to include score and username",
@@ -393,17 +376,48 @@ app.post("/leaderboards/:gameName", (req, res) => {
         return;
     }
 
-    if (name === "flagfrenzy") {
-        flagFrenzyLeaderboard = addToDatabase(newEntry, flagFrenzyLeaderboard);
-        res.status(200).json(flagFrenzyLeaderboard);
-    } else if (name === "countryquiz") {
-        countryQuizLeaderboard = addToDatabase(
-            newEntry,
-            countryQuizLeaderboard
-        );
-        res.status(200).json(countryQuizLeaderboard);
-    }
+    //return new leaderboard
+    leaderboards[name] = addToDatabase(newEntry, leaderboards[name]);
+    res.status(200).json(leaderboards[name]);
 });
+
+// GET all ranks from rank database
+app.get("/ranks", (req, res) => {
+    if (!ranks) {
+        res.status(404).json({
+            message: "Database ranks not found",
+        });
+        return;
+    }
+
+    res.status(200).json(ranks);
+});
+
+// GET a specific rank name
+app.get("/ranks/:name", (req, res) => {
+    const name = req.params.name;
+    if (!ranks) {
+        res.status(404).json({
+            message: "Database ranks not found",
+        });
+        return;
+    }
+
+    const rank = ranks.filter((r) => r.name === name)[0];
+
+    res.status(200).json(rank);
+});
+
+// functions to sort database data
+function getWholeProfile(userProfile) {
+    rank = ranks.filter((r) => r.id == userProfile.rank)[0];
+
+    let totalUserProfile = {
+        ...userProfile,
+    };
+    totalUserProfile.rank = rank;
+    return totalUserProfile;
+}
 
 // if score in top 10, add to leaderboard
 function addToDatabase(newEntry, leaderboard) {
@@ -429,30 +443,5 @@ function addToDatabase(newEntry, leaderboard) {
 
     return newLeaderboard;
 }
-
-app.get("/ranks", (req, res) => {
-    if (!ranks) {
-        res.status(404).json({
-            message: "Database ranks not found",
-        });
-        return;
-    }
-
-    res.status(200).json(ranks);
-});
-
-app.get("/ranks/:name", (req, res) => {
-    const name = req.params.name;
-    if (!ranks) {
-        res.status(404).json({
-            message: "Database ranks not found",
-        });
-        return;
-    }
-
-    const rank = ranks.filter((r) => r.name === name);
-
-    res.status(200).json(rank);
-});
 
 module.exports = app; // makes the server available to other files
