@@ -1,6 +1,6 @@
 const userProfile = {
-    username: "hello",
-    points: 10,
+    username: "",
+    points: 0,
     rank: "gn",
 };
 

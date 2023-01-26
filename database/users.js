@@ -1,8 +1,8 @@
 const users = [
     {
-        username: "hello",
-        points: 10,
-        rank: "Geo Novice",
+        username: "",
+        points: 0,
+        rank: "gn",
     },
 ];
 

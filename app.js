@@ -179,7 +179,6 @@ app.post("/users", (req, res) => {
     });
 });
 
-// GET random fun fact endpoint
 app.get("/fun-facts", (req, res) => {
     if (!funFacts) {
         json.status(404).json({
@@ -190,6 +189,7 @@ app.get("/fun-facts", (req, res) => {
     res.status(200).json(funFacts);
 });
 
+// GET random fun fact endpoint
 app.get("/fun-facts/random", (req, res) => {
     if (funFacts.length === 0) {
         res.status(404).json({
@@ -204,7 +204,7 @@ app.get("/fun-facts/random", (req, res) => {
     res.status(200).json(randomFact);
 });
 
-//GET request for random flag and fact
+// GET all flags and facts
 app.get("/flag-facts", (req, res) => {
     if (!flags) {
         json.status(404).json({
@@ -215,6 +215,7 @@ app.get("/flag-facts", (req, res) => {
     res.status(200).json(flags);
 });
 
+//GET request for random flag and fact
 app.get("/flag-facts/random", (req, res) => {
     if (flags.length === 0) {
         res.status(404).json({
@@ -229,7 +230,7 @@ app.get("/flag-facts/random", (req, res) => {
     res.status(200).json(randomFlag);
 });
 
-//countryfacts
+// GET all country facts
 app.get("/countries", (req, res) => {
     if (!countries) {
         json.status(404).json({
@@ -240,6 +241,7 @@ app.get("/countries", (req, res) => {
     res.status(200).json(countries);
 });
 
+// GET random country fact
 app.get("/country-facts", (req, res) => {
     if (countries.length === 0) {
         res.status(404).json({
@@ -274,59 +276,6 @@ app.get("/country-facts/:id", (req, res) => {
 
     res.status(200).json(answers);
 });
-
-function getAnswersFor(category, countryId) {
-    // error handle if category not found in database
-    if (!category in countries) {
-        return;
-    }
-
-    // For some categories, an answer can appear more than once (eg. continent)
-    let allAnswers = [];
-    for (country of countries) {
-        allAnswers.push(country[category]);
-    }
-    // This finds just the unique answers
-    function onlyUnique(value, index, self) {
-        return self.indexOf(value) === index;
-    }
-    let uniqueAnswers = allAnswers.filter(onlyUnique);
-
-    // if the total possible answers is 4 or less (eg. only 2 hemispheres), just return all the answers
-    if (uniqueAnswers.length <= 4) {
-        // put the answers in a random order
-        const shuffledAnswers = uniqueAnswers.sort(
-            (a, b) => 0.5 - Math.random()
-        );
-        return shuffledAnswers;
-    }
-
-    // get the correct answer
-    let answers = [];
-    answers.push(countries[countryId][category]);
-
-    // delete correct answer from the unique answers array
-    const correctIndex = uniqueAnswers.indexOf(countries[countryId][category]);
-    uniqueAnswers.splice(correctIndex, 1);
-
-    // now get 3 random answers
-    for (i = 0; i < 3; i++) {
-        // gets random index and answer from unique answers
-        let randomIndex = Math.floor(Math.random() * uniqueAnswers.length);
-        let randomAnswer = uniqueAnswers[randomIndex];
-        answers.push(randomAnswer);
-
-        // delete the random answer so can't be selected again
-        uniqueAnswers.splice(randomIndex, 1);
-    }
-
-    // put the answers in a random order
-    const shuffledAnswers = answers.sort((a, b) => 0.5 - Math.random());
-
-    return shuffledAnswers;
-}
-
-// leaderboard endpoints
 
 // GET all leaderboard data
 app.get("/leaderboards", (req, res) => {
@@ -407,6 +356,57 @@ app.get("/ranks/:name", (req, res) => {
 
     res.status(200).json(rank);
 });
+
+function getAnswersFor(category, countryId) {
+    // error handle if category not found in database
+    if (!category in countries) {
+        return;
+    }
+
+    // For some categories, an answer can appear more than once (eg. continent)
+    let allAnswers = [];
+    for (country of countries) {
+        allAnswers.push(country[category]);
+    }
+    // This finds just the unique answers
+    function onlyUnique(value, index, self) {
+        return self.indexOf(value) === index;
+    }
+    let uniqueAnswers = allAnswers.filter(onlyUnique);
+
+    // if the total possible answers is 4 or less (eg. only 2 hemispheres), just return all the answers
+    if (uniqueAnswers.length <= 4) {
+        // put the answers in a random order
+        const shuffledAnswers = uniqueAnswers.sort(
+            (a, b) => 0.5 - Math.random()
+        );
+        return shuffledAnswers;
+    }
+
+    // get the correct answer
+    let answers = [];
+    answers.push(countries[countryId][category]);
+
+    // delete correct answer from the unique answers array
+    const correctIndex = uniqueAnswers.indexOf(countries[countryId][category]);
+    uniqueAnswers.splice(correctIndex, 1);
+
+    // now get 3 random answers
+    for (i = 0; i < 3; i++) {
+        // gets random index and answer from unique answers
+        let randomIndex = Math.floor(Math.random() * uniqueAnswers.length);
+        let randomAnswer = uniqueAnswers[randomIndex];
+        answers.push(randomAnswer);
+
+        // delete the random answer so can't be selected again
+        uniqueAnswers.splice(randomIndex, 1);
+    }
+
+    // put the answers in a random order
+    const shuffledAnswers = answers.sort((a, b) => 0.5 - Math.random());
+
+    return shuffledAnswers;
+}
 
 // functions to sort database data
 function getWholeProfile(userProfile) {
